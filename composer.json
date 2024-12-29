@@ -1,0 +1,17 @@
+{
+    "name": "lab3/vendor",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vladimir",
+            "email": "103267831+AgentVoe@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.24"
+    }
+}
