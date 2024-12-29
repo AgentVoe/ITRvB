@@ -2,36 +2,32 @@
 
 require 'vendor/autoload.php';
 
-use App\User;
-use App\Article;
-use App\Comment;
+use App\Models\Post;
+use App\Models\Comment;
+use App\Repositories\PostsRepository;
+use App\Repositories\CommentsRepository;
+use Ramsey\Uuid\Uuid;
 use Faker\Factory;
 
 $faker = Factory::create();
 
-// Генерация примеров пользователей
-$user = new User();
-$user->id = 1;
-$user->firstName = $faker->firstName;
-$user->lastName = $faker->lastName;
+$db = new PDO('sqlite:database.sqlite');
 
-// Вывод данных
-echo "User: {$user->id}, {$user->firstName} {$user->lastName}\n";
+$postsRepository = new PostsRepository($db);
 
-$article = new Article();
-$article->id = 1;
-$article->authorId = $user->id;
-$article->title = $faker->sentence;
-$article->text = $faker->paragraph;
+$post = new Post(Uuid::uuid4(), Uuid::uuid4(), 'Title', 'Text');
 
-echo "Article: {$article->id}, {$article->title}\n";
+$postsRepository->save($post);
+$getPost = $postsRepository->get($post->uuid->toString());
 
-$comment = new Comment();
-$comment->id = 1;
-$comment->authorId = $user->id;
-$comment->articleId = $article->id;
-$comment->text = $faker->sentence;
+echo "post Id = {$getPost->uuid} post Title = {$getPost->title}<br>";
 
-echo "Comment: {$comment->id}, {$comment->text}\n";
+$commentsRepository = new CommentsRepository($db);
 
+$comment = new Comment(Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), 'Text');
+
+$commentsRepository->save($comment);
+$getComment = $commentsRepository->get($comment->uuid->toString());
+
+echo "comment Id = {$getComment->uuid} comment Text = {$getComment->text}<br>";
 ?>
