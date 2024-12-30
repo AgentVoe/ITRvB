@@ -6,6 +6,8 @@ use App\Repositories\PostLikesRepository;
 use PDO;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class LikesController
 {
@@ -13,8 +15,10 @@ class LikesController
 
     public function __construct()
     {
+        $logger = new Logger('postLikes');
+        $logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/app.log', Logger::INFO));
         $db = new PDO('sqlite:database.sqlite');
-        $likesRepository = new PostLikesRepository($db);
+        $likesRepository = new PostLikesRepository($db, $logger);
         $this->createLike = new CreateLike($likesRepository);
     }
 

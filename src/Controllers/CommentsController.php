@@ -6,6 +6,8 @@ use App\Services\CreateComment;
 use PDO;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class CommentsController
 {
@@ -13,8 +15,10 @@ class CommentsController
 
     public function __construct()
     {
+        $logger = new Logger('comments');
+        $logger->pushHandler(new StreamHandler(__DIR__ . '/../../logs/app.log', Logger::INFO));
         $db = new PDO('sqlite:database.sqlite');
-        $commentsRepository = new CommentsRepository($db);
+        $commentsRepository = new CommentsRepository($db, $logger);
         $this->createComment = new CreateComment($commentsRepository);
     }
 

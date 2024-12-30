@@ -6,14 +6,17 @@ use App\Models\Comment;
 use App\Repositories\Interfaces\ICommentsRepository;
 use Ramsey\Uuid\Uuid;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class CommentsRepository implements ICommentsRepository
 {
     private PDO $db;
+    private LoggerInterface $logger;
 
-    public function __construct(PDO $db)
+    public function __construct(PDO $db, LoggerInterface $logger)
     {
         $this->db = $db;
+        $this->logger = $logger;
     }
 
     public function get(string $uuid): ?Comment 
@@ -23,6 +26,7 @@ class CommentsRepository implements ICommentsRepository
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$row) {
+            $this->logger->warning('Комментарий не найден', ['postUuid' => $uuid]);
             throw new Exception('Комментарий не найден');
         }
 
@@ -40,6 +44,8 @@ class CommentsRepository implements ICommentsRepository
             'author' => $comment->authorUuid->toString(),
             'text' => $comment->text,
         ]);
+
+        $this->logger->info('Комментарий сохранен', ['postUuid' => $comment->uuid->toString()]);
     }
 
     public function delete (string $uuid): void
@@ -51,6 +57,7 @@ class CommentsRepository implements ICommentsRepository
 
         if ($stmt->rowCount() === 0)
         {
+            $this->logger->warning('Комментарий не найден', ['postUuid' => $uuid]);
             throw new Exception('Comment not found');
         }
     }

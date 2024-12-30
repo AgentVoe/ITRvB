@@ -5,6 +5,7 @@ use App\Services\CreatePost;
 use App\Repositories\PostsRepository;
 use App\Models\Post;
 use Ramsey\Uuid\Uuid;
+use App\Test\TestLogger;
 
 class CreatePostTest extends TestCase {
     private CreatePost $service;
@@ -20,7 +21,7 @@ class CreatePostTest extends TestCase {
             );
         ");
 
-        $this->service = new CreatePost(new PostsRepository($db));
+        $this->service = new CreatePost(new PostsRepository($db, new TestLogger()));
     }
 
     public function testReturnsSuccessResponse(): void

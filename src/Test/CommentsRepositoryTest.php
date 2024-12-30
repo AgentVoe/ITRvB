@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use App\Repositories\CommentsRepository;
 use App\Models\Comment;
 use Ramsey\Uuid\Uuid;
+use App\Test\TestLogger;
 
 class CommentsRepositoryTest extends TestCase {
     private PDO $db;
@@ -23,7 +24,7 @@ class CommentsRepositoryTest extends TestCase {
     }
 
     public function testCommentIsSavedToRepository(): void {
-        $repository = new CommentsRepository($this->db);
+        $repository = new CommentsRepository($this->db, new TestLogger());
         $comment = new Comment(Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), 'Test text');
 
         $repository->save($comment);
@@ -38,7 +39,7 @@ class CommentsRepositoryTest extends TestCase {
     }
 
     public function testCommentCanBeRetrievedByUUID(): void {
-        $repository = new CommentsRepository($this->db);
+        $repository = new CommentsRepository($this->db, new TestLogger());
         $comment = new Comment(Uuid::uuid4(), Uuid::uuid4(), Uuid::uuid4(), 'Test text');
 
         $repository->save($comment);
@@ -51,7 +52,7 @@ class CommentsRepositoryTest extends TestCase {
     public function testExceptionThrownIfCOMMENTNotFound(): void {
         $this->expectException(Exception::class);
 
-        $repository = new CommentsRepository($this->db);
+        $repository = new CommentsRepository($this->db, new TestLogger());
         $repository->get(Uuid::uuid4()->toString());
     }
 }

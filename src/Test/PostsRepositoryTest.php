@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use App\Repositories\PostsRepository;
 use App\Models\Post;
 use Ramsey\Uuid\Uuid;
+use App\Test\TestLogger;
 
 class PostsRepositoryTest extends TestCase {
     private PDO $db;
@@ -21,7 +22,7 @@ class PostsRepositoryTest extends TestCase {
     }
 
     public function testPostIsSavedToRepository(): void {
-        $repository = new PostsRepository($this->db);
+        $repository = new PostsRepository($this->db, new TestLogger());
         $post = new Post(Uuid::uuid4(), Uuid::uuid4(), 'Test Title', 'Test text');
 
         $repository->save($post);
@@ -36,7 +37,7 @@ class PostsRepositoryTest extends TestCase {
     }
 
     public function testPostCanBeRetrievedByUUID(): void {
-        $repository = new PostsRepository($this->db);
+        $repository = new PostsRepository($this->db, new TestLogger());
         $post = new Post(Uuid::uuid4(), Uuid::uuid4(), 'Test Title', 'Test Content');
 
         $repository->save($post);
@@ -49,7 +50,7 @@ class PostsRepositoryTest extends TestCase {
     public function testExceptionThrownIfPostNotFound(): void {
         $this->expectException(Exception::class);
 
-        $repository = new PostsRepository($this->db);
+        $repository = new PostsRepository($this->db, new TestLogger());
         $repository->get(Uuid::uuid4()->toString());
     }
 }

@@ -4,14 +4,17 @@ namespace App\Repositories;
 use App\Models\PostLike;
 use App\Repositories\Interfaces\IPostLikesRepository;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class PostLikesRepository implements IPostLikesRepository
 {
     private PDO $db;
+    private LoggerInterface $logger;
 
-    public function __construct(PDO $db)
+    public function __construct(PDO $db, LoggerInterface $logger)
     {
         $this->db = $db;
+        $this->logger = $logger;
     }
 
     public function save(PostLike $like): void
@@ -24,6 +27,8 @@ class PostLikesRepository implements IPostLikesRepository
             'post_uuid' => $like->postUuid,
             'author_uuid' => $like->authorUuid,
         ]);
+
+        $this->logger->info('Лайк добавлен', ['postUuid' => $like->uuid->toString()]);
     }
 
     public function getByPostUuid(string $postUuid): array

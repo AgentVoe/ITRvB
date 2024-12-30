@@ -6,14 +6,17 @@ use App\Models\Post;
 use App\Repositories\Interfaces\IPostsRepository;
 use Ramsey\Uuid\Uuid;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class PostsRepository implements IPostsRepository
 {
     private PDO $db;
+    private LoggerInterface $logger;
 
-    public function __construct(PDO $db)
+    public function __construct(PDO $db, LoggerInterface $logger)
     {
         $this->db = $db;
+        $this->logger = $logger;
     }
 
     public function get(string $uuid): ?Post 
@@ -23,6 +26,7 @@ class PostsRepository implements IPostsRepository
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$row) {
+            $this->logger->warning('Пост не найден', ['postUuid' => $uuid]);
             throw new Exception('Пост не найден');
         }
 
@@ -40,6 +44,8 @@ class PostsRepository implements IPostsRepository
             'title' => $post->title,
             'text' => $post->text,
         ]);
+
+        $this->logger->info('Пост сохранен', ['postUuid' => $post->uuid->toString()]);
     }
 
     public function delete (string $uuid): void
@@ -51,6 +57,7 @@ class PostsRepository implements IPostsRepository
 
         if ($stmt->rowCount() === 0)
         {
+            $this->logger->warning('Пост не найден', ['postUuid' => $uuid]);
             throw new Exception('Post not found');
         }
     }

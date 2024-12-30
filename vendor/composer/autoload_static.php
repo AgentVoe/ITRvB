@@ -33,6 +33,10 @@ class ComposerStaticInit7e1a031addf4e621c88c5131e804cd4d
             'Psr\\Container\\' => 14,
             'PhpParser\\' => 10,
         ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -90,6 +94,10 @@ class ComposerStaticInit7e1a031addf4e621c88c5131e804cd4d
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
