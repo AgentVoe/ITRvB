@@ -16,7 +16,8 @@ class CommentsRepository implements ICommentsRepository
         $this->db = $db;
     }
 
-    public function get(string $uuid): ?Comment {
+    public function get(string $uuid): ?Comment 
+    {
         $stmt = $this->db->prepare('SELECT * FROM comments WHERE uuid = :uuid');
         $stmt->execute(['uuid' => $uuid]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +29,8 @@ class CommentsRepository implements ICommentsRepository
         return new Comment(Uuid::fromString($row['uuid']), Uuid::fromString($row['post_uuid']), Uuid::fromString($row['author_uuid']), $row['text']);
     }
 
-    public function save(Comment $comment): void {
+    public function save(Comment $comment): void 
+    {
         $stmt = $this->db->prepare(
             'INSERT INTO comments (uuid, post_uuid, author_uuid, text) VALUES (:id, :post, :author, :text)'
         );
@@ -38,6 +40,19 @@ class CommentsRepository implements ICommentsRepository
             'author' => $comment->authorUuid->toString(),
             'text' => $comment->text,
         ]);
+    }
+
+    public function delete (string $uuid): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM comments WHERE uuid = :uuid');
+        $stmt->execute([
+            'uuid' => $uuid
+        ]);
+
+        if ($stmt->rowCount() === 0)
+        {
+            throw new Exception('Comment not found');
+        }
     }
 }
 ?>
